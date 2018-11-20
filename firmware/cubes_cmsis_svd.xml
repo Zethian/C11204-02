@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <device>
-  <name>cubes</name>
+  <name>CUBES</name>
   <version>1.0</version>
-  <description>CMSIS description for cubes.  Created by Microsemi SmartDesign on Thu Sep 13 10:22:51 2018</description>
+  <description>CMSIS description for CUBES.  Created by Microsemi SmartDesign on Wed Sep 26 14:05:08 2018</description>
   <addressUnitBits>8</addressUnitBits>
   <width>32</width>
   <peripherals>

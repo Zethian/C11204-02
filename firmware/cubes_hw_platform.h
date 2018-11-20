@@ -1,10 +1,10 @@
-#ifndef cubes_HW_PLATFORM_H_
-#define cubes_HW_PLATFORM_H_
+#ifndef CUBES_HW_PLATFORM_H_
+#define CUBES_HW_PLATFORM_H_
 /*****************************************************************************
 *
-*Created by Microsemi SmartDesign  Thu Sep 13 10:22:51 2018
+*Created by Microsemi SmartDesign  Wed Sep 26 14:05:08 2018
 *
-*Memory map specification for peripherals in cubes
+*Memory map specification for peripherals in CUBES
 */
 
 /*-----------------------------------------------------------------------------
@@ -13,4 +13,4 @@
 *---------------------------------------------------------------------------*/
 
 
-#endif /* cubes_HW_PLATFORM_H_*/
+#endif /* CUBES_HW_PLATFORM_H_*/

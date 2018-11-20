@@ -99,7 +99,7 @@
                                 								
                                 <option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.other.115060316" name="Other compiler flags" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.other" useByScannerDiscovery="true" value="--specs=cmsis.specs" valueType="string"/>
                                 								
-                                <option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.17342228" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="true" valueType="definedSymbols"/>
+                                <option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.17342228" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="true"/>
                                 								
                                 <inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.59934138" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
                                 							
