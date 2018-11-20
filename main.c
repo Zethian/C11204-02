@@ -15,7 +15,7 @@ int main(void){
 
 	/* Turn off watchdog */
 	SYSREG->WDOG_CR=0;
-	initAll();
+	initUART();
 	while(1){
 	}
 }

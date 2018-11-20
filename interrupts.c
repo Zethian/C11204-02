@@ -21,11 +21,9 @@
 extern mss_uart_instance_t * const gp_my_uart;
 extern mss_uart_instance_t * const gp_my_uart1;
 extern uint8_t send[32];
-extern clock_t start_t, end_t, total_t;
 uint16_t cntr=0;
 
-void initAll(void){
-	start_t = clock();
+void initUART(void){
 	/*
 	 * Initialize and configure UART and timer
 	 * Timer: periodic mode, loads value in load_immediate
@@ -50,7 +48,7 @@ void uart1_rx_handler(mss_uart_instance_t * this_uart){
 	rx_size = MSS_UART_get_rx(this_uart, rx_buff, sizeof(rx_buff)); /* Get message from HVPS and send it on to computer terminal */
 
 
-	sprintf(output, "%i: %s", total_t, rx_buff);
+	sprintf(output, "%s", rx_buff);
 	MSS_UART_polled_tx_string(gp_my_uart, rx_buff);
 
 	//processData(rx_buff); /* Process data for certain commands */

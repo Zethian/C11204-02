@@ -45,11 +45,20 @@ void getarray(uint8_t *array, uint8_t cmd[28]);
 
 /*
  * voltageCheck
- * Reads recieved command to see that voltage is not over 55V (limit on MPPC)
+ * Reads received command to see that voltage is not over 55V (limit on MPPC)
  * Input: Command char array
  * Output: Return -1 as int if over 55V, return 0 otherwise
  *
  */
 int voltageCheck(uint8_t cmd[28]);
+
+/*
+ * HVPS_send_command()
+ * Takes incoming voltage command and transforms it into hex and formats the HST command to uart.
+ * Input: A string literal with voltage in decimal form
+ * Output: Return -1 for fail, 0 for pass.
+ */
+
+int HVPS_send_command(char command[]);
 
 #endif /* FUNCTIONS_H_ */

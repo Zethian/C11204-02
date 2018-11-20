@@ -16,7 +16,7 @@
  * Output: None
  *
  */
-void initAll(void);
+void initUART(void);
 
 /*
  * uart1_rx_handler

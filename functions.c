@@ -22,7 +22,6 @@ const uint8_t etx = 0x03;
 const uint8_t CR = 0x0D;
 uint8_t chkstr[2];
 uint8_t send[32];
-clock_t start_t, end_t, total_t;
 uint16_t rec=0;
 
 mss_uart_instance_t * const gp_my_uart = &g_mss_uart0;
@@ -133,3 +132,35 @@ int checkSumControl(uint8_t cmd[28]){
 		return -1;
 }
 
+
+int HVPS_send_command(char command[]){
+	char HST[30]="HST03E803E8000000006BC900C8";
+	long voltage = strol(command, NULL, 10);
+	char hexvolt[4];
+	sprintf(hexvolt, "%X", voltage);
+	for (int i=0; i<4; i++){
+		HST[19+i]=hexvolt[i];
+	}
+	if(voltageCheck(HST) == -1)
+		return -1;
+	getarray(send, HST);
+	MSS_UART_polled_tx_string(gp_my_uart1, HST);
+	return 0;
+}
+
+/*
+ * 	uint8_t rx_buff[16] ="";
+	uint32_t rx_size;
+	/* Get commands from terminal on connected computer, format them and send them on to HVPS
+	rx_size = MSS_UART_get_rx(this_uart, rx_buff, sizeof(rx_buff));
+	/* Runs test to see if the input voltage is too high
+	if(voltageCheck(rx_buff) == -1){
+		MSS_UART_polled_tx_string(gp_my_uart, "Voltage setting too high");
+		return;
+	}
+	getarray(send, rx_buff);
+	MSS_UART_polled_tx_string(gp_my_uart1, send);
+	/* Clear buffers
+	memset(send, 0, sizeof(send));
+	memset(rx_buff, 0, sizeof(rx_buff));
+ */
