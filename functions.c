@@ -11,7 +11,6 @@
 #include <math.h>
 
 #include "firmware/drivers/mss_uart/mss_uart.h"
-#include "interrupts.h"
 #include "functions.h"
 
 

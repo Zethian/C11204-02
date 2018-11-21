@@ -16,7 +16,7 @@
  * Output: None
  *
  */
-void initUART(void);
+void initUART(int** memory);
 
 
 

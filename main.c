@@ -13,7 +13,7 @@
 
 int main(void){
 
-	initUART();
+	initUART(0x60000000);
 	while(1){
 	}
 }

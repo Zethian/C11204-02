@@ -14,6 +14,8 @@
 
 extern mss_uart_instance_t * const gp_my_uart1;
 
+int *memadr;
+
 
 
  /* UART handler for RX from HVPS */
@@ -30,7 +32,7 @@ void uart1_rx_handler(mss_uart_instance_t * this_uart){
 	/* TODO
 	 * Alter code to store data to memory instead of sending it to computer UART
 	 */
-
+	strcpy(*memadr,output);
 
 	//processData(rx_buff); /* Process data for certain commands */
 	memset(rx_buff, 0, sizeof(rx_buff)); /* Clear buffer */
@@ -71,12 +73,14 @@ void Timer1_IRQHandler(){
 }
 
 
-void initUART(void){
+void initUART(int** memory){
 	/*
 	 * Initialize and configure UART and timer
 	 * Timer: periodic mode, loads value in load_immediate
 	 * UART: 38400 BAUD, 8 bits, 1 stop bit, even parity
 	 */
+
+	memadr=memory;
 	MSS_TIM64_init(MSS_TIMER_PERIODIC_MODE);
 	MSS_TIM64_load_immediate(0xFFFFFFFF, 0xFFFFFFFF);
 	MSS_UART_init(gp_my_uart1, MSS_UART_38400_BAUD, MSS_UART_DATA_8_BITS | MSS_UART_EVEN_PARITY | MSS_UART_ONE_STOP_BIT);

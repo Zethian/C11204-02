@@ -41,4 +41,18 @@ void getarray(uint8_t *array, uint8_t cmd[28]);
 
 int HVPS_send_voltage(char command[]);
 
+/*
+ * HVPS_turn_on()
+ * Command for turning on the HVPS
+ *
+ */
+void HVPS_turn_on(void);
+
+/*
+ * HVPS_turn_off()
+ * Command for turning the HVPS off
+ */
+
+void HVPS_turn_off(void);
+
 #endif /* FUNCTIONS_H_ */
