@@ -11,17 +11,17 @@
 
 
 /*
- * Sends string to HVPS with some boot settings (not needed in later documentation)
+ * Sends string to hvps with some boot settings (not needed in later documentation)
  * Input: None
  * Output: None
  *
  */
 
-void startHVPS(void);
+void starthvps(void);
 
 
 /*
- * Function takes pointer to destination array and commandline received from terminal, and formats it to readable for HVPS
+ * Function takes pointer to destination array and commandline received from terminal, and formats it to readable for hvps
  * Input: Char array pointer, char array command
  * Output: None
  *
@@ -33,26 +33,26 @@ void getarray(uint8_t *array, uint8_t cmd[28]);
 
 
 /*
- * HVPS_send_voltage()
+ * hvps_send_voltage()
  * Takes incoming voltage command and transforms it into hex and formats the HST command to uart.
  * Input: A string literal with voltage in decimal form
  * Output: Return -1 for fail, 0 for pass.
  */
 
-int HVPS_send_voltage(char command[]);
+int hvps_send_voltage(char command[]);
 
 /*
- * HVPS_turn_on()
- * Command for turning on the HVPS
+ * hvps_turn_on()
+ * Command for turning on the hvps
  *
  */
-void HVPS_turn_on(void);
+void hvps_turn_on(void);
 
 /*
- * HVPS_turn_off()
- * Command for turning the HVPS off
+ * hvps_turn_off()
+ * Command for turning the hvps off
  */
 
-void HVPS_turn_off(void);
+void hvps_turn_off(void);
 
 #endif /* FUNCTIONS_H_ */

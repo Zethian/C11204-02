@@ -12,8 +12,8 @@
 
 
 int main(void){
-
-	initUART(0x60000000);
+	/* Change to pass address instead of null pointer */
+	init_uart(NULL);
 	while(1){
 	}
 }

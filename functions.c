@@ -46,7 +46,7 @@ void getarray(uint8_t *array, uint8_t cmd[28]){
 }
 
 
-void startHVPS(void){
+void start_hvps(void){
 	char temp[50] = "";
 	strcpy(temp, "HST03E803E800000000600000C8");
 	getarray(send, temp); /*get required string from function */
@@ -61,7 +61,7 @@ void startHVPS(void){
  * Output: Return -1 as int if over 55V, return 0 otherwise
  *
  */
-int voltageCheck(uint8_t cmd[28]){
+int voltage_check(uint8_t cmd[28]){
 	uint8_t data[4] = "";
 	uint16_t val = 0;
 	if((cmd[0]=='H' && cmd[1]=='S' && cmd[2]=='T')) {
@@ -85,7 +85,7 @@ int voltageCheck(uint8_t cmd[28]){
 /*
  * TODO: Behövs den?, varför byggde jag den här funktionen?
  */
-int checkSumControl(uint8_t cmd[28]){
+int checksum_control(uint8_t cmd[28]){
 	uint16_t i=0;
 	uint16_t sum = 0x00;
 	uint8_t check[2] = "";
@@ -104,7 +104,7 @@ int checkSumControl(uint8_t cmd[28]){
 }
 
 
-int HVPS_send_voltage(char command[]){
+int hvps_send_voltage(char command[]){
 	char HST[30]="HST03E803E800000000600000C8"; /* Standard input, ~52V, no temp correction */
 	long voltage = strtol(command, NULL, 10); /* Get integer format of input voltage */
 	char hexvolt[4];
@@ -121,14 +121,14 @@ int HVPS_send_voltage(char command[]){
 	return 0;
 }
 
-void HVPS_turn_on(void){
+void hvps_turn_on(void){
 	char HON[] = "HON";
 	getarray(send, HON);
 	MSS_UART_polled_tx_string(gp_my_uart1, HON);
 	memset(send, 0, sizeof(send));
 }
 
-void HVPS_turn_off(void){
+void hvps_turn_off(void){
 	char HOF[] = "HOF";
 	getarray(send, HOF);
 	MSS_UART_polled_tx_string(gp_my_uart1, HOF);
