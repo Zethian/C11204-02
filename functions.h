@@ -17,9 +17,25 @@
  *
  */
 
-void starthvps(void);
+void start_hvps(void);
 
+/*
+ * voltage_check
+ * Checks input voltage level to see that it's within MPPC specifications
+ * Input: Command with HEX voltage value.
+ * Output: 0 if passed, -1 if voltage too high
+ */
 
+int voltage_check(uint8_t cmd[28]);
+
+/*
+ * checksum_control
+ * Controls Checksum value for HVPS response
+ * Input: Command for HVPS
+ * Output 0 if passed, -1 if not passed. Int values.
+ */
+
+int checksum_control(uint8_t cmd[28])
 /*
  * Function takes pointer to destination array and commandline received from terminal, and formats it to readable for hvps
  * Input: Char array pointer, char array command

@@ -12,7 +12,7 @@
 
 
 int main(void){
-	/* Change to pass address instead of null pointer */
+	/* TODO: Change to pass address instead of null pointer */
 	init_uart(NULL);
 	while(1){
 	}
