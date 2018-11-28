@@ -35,7 +35,7 @@ int voltage_check(uint8_t cmd[28]);
  * Output 0 if passed, -1 if not passed. Int values.
  */
 
-int checksum_control(uint8_t cmd[28])
+int checksum_control(uint8_t cmd[28]);
 /*
  * Function takes pointer to destination array and commandline received from terminal, and formats it to readable for hvps
  * Input: Char array pointer, char array command

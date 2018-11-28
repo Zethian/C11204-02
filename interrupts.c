@@ -19,33 +19,47 @@ int *memadr;
 
 
  /* UART handler for RX from HVPS */
-/* TODO: Add some sort of process to check for what command got returned, if status, write to memory, if return from sent command, ackknowledge or ignore */
 void uart1_rx_handler(mss_uart_instance_t * this_uart){
 	uint8_t rx_buff[16]="";
 	uint32_t rx_size;
-	uint8_t output[18]="";
-	static int writing=0;
+	uint8_t buffer[50]="";
+	static unsigned int writing = 0;
 
-	rx_size = MSS_UART_get_rx(this_uart, rx_buff, sizeof(rx_buff)); /* Get message from HVPS and send it on to computer terminal */
+	rx_size = MSS_UART_get_rx(this_uart, rx_buff, sizeof(rx_buff)); /* Get message from external and send it on to computer terminal */
 	if(writing == 0)
-		output[0] = '\0';
+		buffer[0] = '\0';
 	if(rx_buff[0] != 0x0d){
 		writing = 1;
-		strncat((char*)output, rx_buff, rx_size);
+		strncat((char*)buffer, rx_buff, rx_size);
 	}
 	else {
 		writing = 0;
-		MSS_UART_polled_tx_string(&g_mss_uart0, output);
+		MSS_UART_polled_tx_string(&g_mss_uart0, buffer);
 	}
-
-	sprintf(output, "%s", rx_buff);
-	/* TODO
-	 * Alter code to store data to memory instead of sending it to computer UART
-	 */
-	strcpy(memadr,output);
-
-	//processData(rx_buff); /* Process data for certain commands */
 	memset(rx_buff, 0, sizeof(rx_buff)); /* Clear buffer */
+}
+
+/* UART handler for RX from external source */
+
+void uart0_rx_handler(mss_uart_instance_t * this_uart){
+	unsigned char rx_buff[10] ="";
+	unsigned int rx_size;
+	uint8_t buffer[50]="";
+	static unsigned int writing = 0;
+	/* Get commands from terminal on connected computer and send them on to external*/
+	rx_size = MSS_UART_get_rx(this_uart, rx_buff, sizeof(rx_buff));
+	if(writing == 0)
+		buffer[0] = '\0';
+	if(rx_buff[0] != 0x0d){
+		writing = 1;
+		strncat((char*)buffer, rx_buff, rx_size);
+	}
+	else{
+		writing = 0;
+		MSS_UART_polled_tx_string(&g_mss_uart1, rx_buff);
+	}
+	/* Clear buffers */
+	memset(rx_buff, 0, sizeof(rx_buff));
 }
 
 
@@ -95,6 +109,7 @@ void init_uart(int* memory){
 	MSS_TIM64_load_immediate(0xFFFFFFFF, 0xFFFFFFFF);
 	MSS_UART_init(gp_my_uart1, MSS_UART_38400_BAUD, MSS_UART_DATA_8_BITS | MSS_UART_EVEN_PARITY | MSS_UART_ONE_STOP_BIT);
 	MSS_UART_init(&g_mss_uart0, MSS_UART_38400_BAUD, MSS_UART_DATA_8_BITS | MSS_UART_EVEN_PARITY | MSS_UART_ONE_STOP_BIT);
+	MSS_UART_set_rx_handler(&g_mss_uart0, uart0_rx_handler, MSS_UART_FIFO_SINGLE_BYTE);
 	MSS_UART_set_rx_handler(gp_my_uart1, uart1_rx_handler, MSS_UART_FIFO_SINGLE_BYTE);
 	MSS_TIM64_enable_irq();
 	MSS_TIM64_start();
