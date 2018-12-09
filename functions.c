@@ -19,7 +19,7 @@ uint8_t chkstr[2];
 uint8_t send[32];
 uint16_t rec=0;
 
-mss_uart_instance_t * const gp_my_uart1 = &g_mss_uart1;
+static mss_uart_instance_t * const gp_my_uart1 = &g_mss_uart1;
 
 
 
@@ -113,7 +113,7 @@ int hvps_send_voltage(char command[]){
 	for (int i=0; i<4; i++){ /* Move voltage into temperature correction factor */
 		HST[19+i]=hexvolt[i];
 	}
-	if(voltageCheck(HST) == -1)
+	if(voltage_check(HST) == -1)
 		return -1;
 	getarray(send, HST); /* Format string to UART and send it on */
 	MSS_UART_polled_tx_string(gp_my_uart1, send);
