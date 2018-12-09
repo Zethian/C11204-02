@@ -26,7 +26,7 @@
 /* Variables used over several functions defined as global */
 
 uint8_t chkstr[2];
-uint8_t send[40];
+uint8_t send[50];
 uint16_t rec=0;
 
 
@@ -62,33 +62,34 @@ int voltageCheck(uint8_t cmd[28]){
 
  /* UART handler for RX from HVPS */
 void uart1_rx_handler(mss_uart_instance_t * this_uart){
-	uint8_t rx_buff[16]="";
+	uint8_t rx_buff[30]="";
 	uint32_t rx_size;
-	uint8_t output[18]="";
 	rx_size = MSS_UART_get_rx(this_uart, rx_buff, sizeof(rx_buff)); /* Get message from HVPS and send it on to computer terminal */
+	processData(rx_buff);
 
-	MSS_UART_polled_tx_string(gp_my_uart, rx_buff);
-	//processData(rx_buff); /* Process data for certain commands */
-	memset(rx_buff, 0, sizeof(rx_buff)); /* Clear buffer */
 }
 
 /* UART handler for RX from external source */
 
 void uart0_rx_handler(mss_uart_instance_t * this_uart){
-	uint8_t rx_buff[16] ="";
-	uint32_t rx_size;
-	/* Get commands from terminal on connected computer, format them and send them on to HVPS */
+	unsigned char rx_buff[30] ="";
+	unsigned int rx_size;
+	static uint8_t buffer[50]="";
+	/* Get commands from terminal on connected computer and send them on to external*/
 	rx_size = MSS_UART_get_rx(this_uart, rx_buff, sizeof(rx_buff));
-	if(voltageCheck(rx_buff) == -1){
-		MSS_UART_polled_tx_string(gp_my_uart, "Voltage setting too high");
-		return;
+	if(rx_buff[rx_size-1] != 0x0d){
+		strncat((char*)buffer, rx_buff, rx_size);
 	}
-	getarray(send, rx_buff);
-	MSS_UART_polled_tx_string(gp_my_uart1, send);
-	/* Clear buffers */
-	memset(send, 0, sizeof(send));
-	memset(rx_buff, 0, sizeof(rx_buff));
+	else {
+		strncat((char*)buffer, rx_buff, rx_size-1);
+		getarray(send, buffer);
+		MSS_UART_polled_tx_string(&g_mss_uart1, send);
+		memset(buffer, '\0', sizeof(buffer));
+		memset(send, '\0', sizeof(send));
+	}
+
 }
+
 
 /*
  * Gets the combined array from all the parts of the message by adding start and stop bits, delimiter and calculating the checksum
@@ -97,7 +98,7 @@ void getarray(uint8_t *array, uint8_t cmd[28]){
 	const uint8_t stx = 0x02;
 	const uint8_t etx = 0x03;
 	const uint8_t CR = 0x0D;
-	uint8_t chksm=0x00;
+	uint32_t chksm=0x00;
 	/* Memmove is used with offset for the adress because strcat did not give the proper format when sending it on to the HVPS */
 	memmove(array, &stx, 1);
 	memmove(array+1, cmd, strlen(cmd));
@@ -106,7 +107,7 @@ void getarray(uint8_t *array, uint8_t cmd[28]){
 		chksm+=array[i];
 	}
 	chksm = (chksm & 0xFF); /* Mask so only lower 2 bytes get sent */
-	sprintf(chkstr, "%X", chksm);
+	sprintf(chkstr, "%02X", chksm);
 	memmove(array+2+strlen(cmd), chkstr, 2);
 	memmove(array+4+strlen(cmd), &CR, 1);
 	strcpy(cmd, "");
@@ -114,9 +115,13 @@ void getarray(uint8_t *array, uint8_t cmd[28]){
 }
 
 /* Processes received data from the RX */
-void processData(uint8_t data[]){
+void processData(uint8_t data[30]){
 	uint64_t output;
 	uint8_t out[4] = "";
+
+	MSS_UART_polled_tx_string(gp_my_uart, data);
+	memset(send, '\0', sizeof(send));
+
 	for(int i = 0; i<4; i++){
 		out[i]=data[i+4];
 	}
@@ -126,13 +131,13 @@ void processData(uint8_t data[]){
 		strcpy(send, "High-Voltage on");
 	}
 	else if(data[1] =='h' && data[2] == 'g' && data[3] == 'v'){
-		output=round(output*(1.812/pow(10, 3)));
-		sprintf(send, "Voltage output is: %i V\n", output);
+		output=round(output*(1.812/pow(10, 3))*1000);
+		sprintf(send, "Voltage output is: %i mV\n", output);
 
 	}
 	else if(data[1] =='h' && data[2] == 'g' && data[3] == 'c'){
-		output=round(output*(5.194/pow(10, 3)));
-		sprintf(send, "Current output is: %i A\n", output);
+		output=round(output*(5.194/pow(10, 3))*1000);
+		sprintf(send, "Current output is: %i mA\n", output);
 
 	}
 	else if(data[1] =='h' && data[2] == 'g' && data[3] == 't'){
@@ -141,7 +146,7 @@ void processData(uint8_t data[]){
 
 	}
 	MSS_UART_polled_tx_string(gp_my_uart, send);
-	memset(send, 0, sizeof(send));
+	memset(send, '\0', sizeof(send));
 
 }
 
@@ -158,7 +163,7 @@ void Timer1_IRQHandler(){
 		strcpy(command, "HGV");
 		getarray(send, command);
 		MSS_UART_polled_tx_string(gp_my_uart1, send);
-		strcpy(send, "");
+		memset(send, '\0', sizeof(send));
 		cntr=0;
 	}
 	if(cntr%3==1){
@@ -166,14 +171,14 @@ void Timer1_IRQHandler(){
 		strcpy(command, "HGC");
 		getarray(send, command);
 		MSS_UART_polled_tx_string(gp_my_uart1, send);
-		strcpy(send, "");
+		memset(send, '\0', sizeof(send));
 	}
 	if(cntr%3==2){
 		/* Command for getting Temperature output */
 		strcpy(command, "HGT");
 		getarray(send, command);
 		MSS_UART_polled_tx_string(gp_my_uart1, send);
-		strcpy(send, "");
+		memset(send, '\0', sizeof(send));
 	}
 	cntr++;
 	MSS_TIM1_clear_irq(); /*interrupt bit needs to be cleared after every call */
@@ -185,13 +190,10 @@ void Timer1_IRQHandler(){
  */
 void startHVPS(void){
 	char temp[50] = "";
-	strcpy(temp, "HST03E803E8000000006BC900C8");
+	strcpy(temp, "HST03E803E8000000001BFF00C8");
 	getarray(send, temp); /*get required string from function */
 	MSS_UART_polled_tx_string(gp_my_uart1, send);
-	while(rec==0){ /* wait for HVPS to confirm started */
-		break;
-	}
-	strcpy(send, "");
+	memset(send, '\0', sizeof(send));
 }
 
 int main(void){
@@ -209,9 +211,9 @@ int main(void){
 	MSS_UART_init(gp_my_uart1, MSS_UART_38400_BAUD, MSS_UART_DATA_8_BITS | MSS_UART_EVEN_PARITY | MSS_UART_ONE_STOP_BIT);
 	MSS_UART_init(gp_my_uart, MSS_UART_38400_BAUD, MSS_UART_DATA_8_BITS | MSS_UART_EVEN_PARITY | MSS_UART_ONE_STOP_BIT);
 	MSS_UART_set_rx_handler(gp_my_uart1, uart1_rx_handler, MSS_UART_FIFO_FOURTEEN_BYTES);
-	MSS_UART_set_rx_handler(gp_my_uart, uart0_rx_handler, MSS_UART_FIFO_EIGHT_BYTES);
+	MSS_UART_set_rx_handler(gp_my_uart, uart0_rx_handler, MSS_UART_FIFO_SINGLE_BYTE);
 	MSS_TIM1_enable_irq();
-	//startHVPS();
+	startHVPS();
 
 
 	MSS_TIM1_start();
